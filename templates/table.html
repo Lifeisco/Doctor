@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Table</title>
+    <link rel="stylesheet" href="{% static "css/bootstrap.css" %}">
+    <link rel="stylesheet" href="{% static "js/bootstrap.min.js" %}">
+    <link rel="stylesheet" href="{% static "css/decoration_noun.css" %}">
+</head>
+<body>
+<style>
+    td{border: 1px solid;}
+    th{border: 1px solid;}
+    .free{background-color: #AAFFAA;}
+    .booked{background-color: #ffcccc;}
+    .poiner{cursor: pointer;}
+    .past{background-color: #909090;}
+</style>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="{% url 'home' %}">Home</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+            <a class="nav-link" href="{% url 'table' %}">Appointment</a>
+      </li>
+      <li class="nav-item">
+            <a class="nav-link" href="#">About</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+    <table>
+  <tr>
+    <th></th>
+    <th>Понедельник</th>
+    <th>Вторник</th>
+    <th>Среда</th>
+    <th>Четверг</th>
+    <th>Пятница</th>
+    <th>Суббота</th>
+    <th>Воскресенье</th>
+
+  </tr>
+    <tr>
+        <th></th>
+        {% for date in dates %}
+            <th>{{ date }}</th>
+        {% endfor %}
+    </tr>
+        {% for time in time_list %}
+            <tr>
+                <td>{{ time }}</td>
+
+                {% for date, times in dates2.items %}
+                  {% if time in times %}
+                            <td class="booked" onclick="alert('Это время занято!')"></td>
+                  {% elif today > date or today == date and time < now or today == date and now|length > time|length %}
+                      {# today > date #}
+                      {# today == date and time < now #}
+                      {# today == date and now|length > time|length #}
+
+                            <td class="past" onclick="alert('Вы не можете записаться на это время!')">
+
+                            </td>
+
+                  {% else %}
+                            <td class="free poiner"><a href="{% url 'appoint' %}?time={{ time }}&date={{ date }}">{{ time }}</a></td>
+                  {% endif %}
+
+
+                {% endfor %}
+
+
+            </tr>
+
+        {% endfor %}
+    </table>
+    {{ dates2 }}
+{% for appointment in appointments %}
+    {{ appointment.date }} - {{ appointment.time }}
+    <p></p>
+{% endfor %}
+
+
+
+</body>
+</html>

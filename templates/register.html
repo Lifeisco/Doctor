@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SignUp</title>
+    <link rel="stylesheet" href="{% static "css/bootstrap.css" %}">
+    <link rel="stylesheet" href="{% static "css/decoration_noun.css" %}">
+
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="{% url 'home' %}">Home</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+            <a class="nav-link" href="{% url 'table' %}">Appointment</a>
+      </li>
+      <li class="nav-item">
+            <a class="nav-link" href="#">About</a>
+      </li>
+      <li class="nav-item">
+            <a class="nav-link" href="#">Create an account</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<form method="post" action="/sign_up/">
+    {% csrf_token %}
+  <div class="mb-3">
+    <label for="exampleInputEmail1" class="form-label">Ваше имя</label>
+    <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="name">
+  </div>
+  <div class="mb-3">
+    <label for="exampleInputPassword1" class="form-label">Пароль</label>
+    <input type="text" class="form-control" id="exampleInputPassword1" name="password">
+  </div>
+  <div class="mb-3">
+    <label for="exampleInputPassword1" class="form-label">Email</label>
+    <input type="text" class="form-control" id="exampleInputPassword1" name="email">
+  </div>
+  <div class="mb-3 form-check">
+      <label for="exampleCheck1"></label><input type="checkbox" class="form-check-input" id="exampleCheck1">
+  </div>
+  <button type="submit" class="btn btn-primary" value="save">Отправить</button>
+</form>
+
+</body>
+</html>
