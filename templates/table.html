@@ -33,6 +33,8 @@
     </ul>
   </div>
 </nav>
+
+{% if user %}
     <table>
   <tr>
     <th></th>
@@ -86,6 +88,9 @@
 {% endfor %}
 
 
+    {% else %}
+    <p>Для записи на прием войдите в аккаунт</p>
+{% endif %}
 
 </body>
 </html>

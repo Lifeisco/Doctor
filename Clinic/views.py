@@ -1,8 +1,15 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from Clinic.models import Appointment, Client, Doctor
+from Clinic.models import Appointment, Doctor
 from django.contrib.auth.models import User
 import datetime
+
+
+#TODO Взаимодействие регистрации пользователя и записей на приём(Если не авторизован, то не запишешься на прием;
+#       при записи указывается телефон из прошлой записи)
+#TODO Запись на следующие недели
+#TODO Выбор специалиста (доктора)
+#TODO Страница для персонала(показать записи на конкр день в формате время, имя, телефон, имя врача)
 
 
 def login_page(request):
@@ -17,7 +24,6 @@ def login_page(request):
             login(request, user)
             return redirect('/home/')
         else:
-
             error_message = 'Неверное имя пользователя или пароль'
 
     return render(request, 'log_in.html')
@@ -31,12 +37,18 @@ def reg_page(request):
 
     return render(request, 'register.html')
 
+def log_out(request):
+    logout(request)
+    return redirect('/')
+
+
 
 def home(request):
     return render(request, 'home.html')
 
 
 def show_table(request):
+    # request.user.is_anonymous
     minutes = 9 * 60
     fill_time = []
     result = []
@@ -57,7 +69,7 @@ def show_table(request):
     appointment_data = Appointment.objects.filter(date__gte=dates[0], date__lte=dates[-1])
 
     for x in appointment_data:
-        fill_time.append({"date":x.date, "time": x.time}) # Добавление в список занятых дат и часов
+        fill_time.append({"date": x.date, "time": x.time}) # Добавление в список занятых дат и часов
         dates2[x.date].append(x.time.strftime("%H:%M"))
 
     now = datetime.datetime.now().time().strftime("%H:%M")
@@ -67,7 +79,8 @@ def show_table(request):
             'dates': dates,
             'dates2': dates2,
             'now': now,
-            'today': today}
+            'today': today,
+            'user': request.user.id}
     return render(request, 'table.html', context=data)
 
 def appointment_page(request):
@@ -75,11 +88,8 @@ def appointment_page(request):
     time = request.GET.get("time", False)
 
     if request.method == "POST":
-        client = Client()
-        client.name = request.POST.get('name')
-        client.email = request.POST.get('email')
-        client.mobile_number = request.POST.get('mobile_number')
-        client.save()
+
+
 
         date = request.POST.get("date", False)
         time = request.POST.get("time", False)
@@ -91,7 +101,7 @@ def appointment_page(request):
             appointment = Appointment()
             appointment.date = date
             appointment.time = time
-            appointment.client_id = client
+            #appointment.client_id = client
             appointment.doctor_id = Doctor.objects.get(id=1)
             appointment.save()
 
