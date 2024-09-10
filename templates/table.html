@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{% static "css/decoration_noun.css" %}">
 </head>
 <body>
+<br>
 <style>
     td{border: 1px solid;}
     th{border: 1px solid;}
@@ -49,7 +50,7 @@
   </tr>
     <tr>
         <th></th>
-        {% for date in dates %}
+        {% for date, times in dates.items %}
             <th>{{ date }}</th>
         {% endfor %}
     </tr>
@@ -57,13 +58,14 @@
             <tr>
                 <td>{{ time }}</td>
 
-                {% for date, times in dates2.items %}
+                {% for date, times in dates.items %}
                   {% if time in times %}
                             <td class="booked" onclick="alert('Это время занято!')"></td>
-                  {% elif today > date or today == date and time < now or today == date and now|length > time|length %}
+                  {% elif today > date and page == 1 or today == date and time < now or today == date and now|length > time|length %}
                       {# today > date #}
                       {# today == date and time < now #}
                       {# today == date and now|length > time|length #}
+                      {# Обязательное условие page=1 #}
 
                             <td class="past" onclick="alert('Вы не можете записаться на это время!')">
 
@@ -81,12 +83,13 @@
 
         {% endfor %}
     </table>
-    {{ dates2 }}
-{% for appointment in appointments %}
-    {{ appointment.date }} - {{ appointment.time }}
-    <p></p>
-{% endfor %}
 
+    <form>
+        <!-- Кнопка для перехода на предыдущую неделю -->
+        <a href="?next={{ back }}" class="btn btn-primary">Назад</a>
+        <!-- Кнопка для перехода на следующую неделю -->
+        <a href="?next={{ page }}" class="btn btn-primary">Вперед</a>
+    </form>
 
     {% else %}
     <p>Для записи на прием войдите в аккаунт</p>

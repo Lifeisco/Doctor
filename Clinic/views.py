@@ -1,15 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from Clinic.models import Appointment, Doctor
+from Clinic.models import Appointment, Doctor, UserPhone
 from django.contrib.auth.models import User
 import datetime
 
 
-#TODO Взаимодействие регистрации пользователя и записей на приём(Если не авторизован, то не запишешься на прием;
-#       при записи указывается телефон из прошлой записи)
-#TODO Запись на следующие недели
 #TODO Выбор специалиста (доктора)
 #TODO Страница для персонала(показать записи на конкр день в формате время, имя, телефон, имя врача)
+#TODO При просмотре сл недель, кнопка для переключения на предыдущую (сделано)
 
 
 def login_page(request):
@@ -34,13 +32,15 @@ def reg_page(request):
         new_user = User.objects.create_user(request.POST.get("name"), request.POST.get("email"), request.POST.get("password"))
         #new_user.is_active = False
         new_user.save()
+        phone = UserPhone.objects.create(phone_number=request.POST.get('phone'), user=new_user)
+        phone.save()
 
     return render(request, 'register.html')
+
 
 def log_out(request):
     logout(request)
     return redirect('/')
-
 
 
 def home(request):
@@ -48,40 +48,45 @@ def home(request):
 
 
 def show_table(request):
-    # request.user.is_anonymous
     minutes = 9 * 60
     fill_time = []
     result = []
-    dates = []
-    dates2 = {}
+    dates = {}
 
     for i in range(22):
         result.append(f"{minutes // 60}:{minutes % 60 if minutes % 60 else '00'}")
         minutes += 30
 
     year, week, dow = datetime.datetime.now().isocalendar()
-    today = datetime.date.today()
+    today = datetime.date.today() # Дата сегоднешнего дня
 
-    for i in range(1 - dow, 8 - dow):
-        dates.append(today + datetime.timedelta(days=i))
-        dates2[today + datetime.timedelta(days=i)] = []
+    next = int(request.GET.get("next", 0))
 
-    appointment_data = Appointment.objects.filter(date__gte=dates[0], date__lte=dates[-1])
+    back = next
+    back -= 1
+
+    for i in range(1 - dow+next*7, 8 - dow+next*7): # Цикл создания дат на неделю
+        dates[(today + datetime.timedelta(days=i)).strftime("%d-%m-%Y")] = [] # Создание пустых списков дат
+
+    appointment_data = Appointment.objects.filter(date__gte=today + datetime.timedelta(days=1 - dow+next*7),
+                                                  date__lte=today + datetime.timedelta(days=8 - dow+next*7))
 
     for x in appointment_data:
-        fill_time.append({"date": x.date, "time": x.time}) # Добавление в список занятых дат и часов
-        dates2[x.date].append(x.time.strftime("%H:%M"))
+        x.date = x.date.strftime("%d-%m-%Y")
+        fill_time.append({"date": x.date, "time": x.time})  # Добавление в список занятых дат и часов
+        dates[x.date].append(x.time.strftime("%H:%M"))
 
     now = datetime.datetime.now().time().strftime("%H:%M")
-    today = datetime.date.today()
     data = {'time_list': result,
             'appointments': fill_time,
             'dates': dates,
-            'dates2': dates2,
             'now': now,
-            'today': today,
-            'user': request.user.id}
+            'today': today.strftime("%d-%m-%Y"),
+            'user': request.user.id,
+            'page': next + 1,
+            'back': back}
     return render(request, 'table.html', context=data)
+
 
 def appointment_page(request):
     date = request.GET.get("date", False)
@@ -89,25 +94,21 @@ def appointment_page(request):
 
     if request.method == "POST":
 
-
-
         date = request.POST.get("date", False)
         time = request.POST.get("time", False)
-
         if date and time:
-            date = datetime.datetime.strptime(date, "%b. %d, %Y")
-            date = datetime.datetime.strftime(date, "%Y-%m-%d")
+            date = datetime.datetime.strptime(date, "%d-%m-%Y")
 
             appointment = Appointment()
             appointment.date = date
             appointment.time = time
-            #appointment.client_id = client
+            appointment.client_id = request.user
             appointment.doctor_id = Doctor.objects.get(id=1)
             appointment.save()
+            date = datetime.datetime.strftime(date, "%d-%m-%Y")
 
     data = {
         'date': date,
         'time': time
     }
     return render(request, 'appointment_page.html', context=data)
-
