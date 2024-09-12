@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from Clinic.views import show_table, home, appointment_page, login_page, reg_page,log_out
+from Clinic.views import show_table, home, appointment_page, login_page, reg_page, log_out, for_doctor
 
 
 urlpatterns = [
@@ -28,5 +28,7 @@ urlpatterns = [
     path('create_response/', appointment_page),
     path('login/', login_page, name='login'),
     path('sign_up/', reg_page, name='register'),
-    path('logout/', log_out, name='logout')
+    path('logout/', log_out, name='logout'),
+    path('fordoctor/', for_doctor)
+
 ]

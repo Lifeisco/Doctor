@@ -1,0 +1,30 @@
+{% include "header.html" %}
+<style>
+    td{border: 1px solid;}
+    th{border: 1px solid;}
+</style>
+<h3>Записи</h3>
+
+<table>
+
+<tr>
+    <th>Время</th>
+    <th>Дата</th>
+    <th>Клиент</th>
+    <th>Номер Тел</th>
+  </tr>
+    {% for appoint in appointments %}
+        <tr>
+            <td>{{ appoint.time }}</td>
+            <td>{{ appoint.date }}</td>
+            <td>{{ appoint.client_id }}</td>
+            <td>{{ appoint.client_id.userphone }}</td>
+        </tr>
+    {% endfor %}
+
+</table>
+
+
+
+</body>
+</html>

@@ -6,8 +6,10 @@ import datetime
 
 
 #TODO Выбор специалиста (доктора)
-#TODO Страница для персонала(показать записи на конкр день в формате время, имя, телефон, имя врача)
-#TODO При просмотре сл недель, кнопка для переключения на предыдущую (сделано)
+#TODO Страница для персонала(показать записи на конкр день в формате время, имя, телефон, имя врача, !!выбор дня(завтра, послезавтра)!!)
+#TODO Отсортировать записи по времени(django orm, запросы в БД)
+#TODO Записи которые не актуальны, не показывать
+#TODO Возможность выбора доктора и дату
 
 
 def login_page(request):
@@ -82,7 +84,7 @@ def show_table(request):
             'dates': dates,
             'now': now,
             'today': today.strftime("%d-%m-%Y"),
-            'user': request.user.id,
+
             'page': next + 1,
             'back': back}
     return render(request, 'table.html', context=data)
@@ -112,3 +114,11 @@ def appointment_page(request):
         'time': time
     }
     return render(request, 'appointment_page.html', context=data)
+
+def for_doctor(request):
+    appoinments = Appointment.objects.all()
+    data = {
+        'appointments': appoinments
+
+    }
+    return render(request, 'For_doctor.html', context=data)

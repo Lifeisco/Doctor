@@ -1,15 +1,6 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Table</title>
-    <link rel="stylesheet" href="{% static "css/bootstrap.css" %}">
-    <link rel="stylesheet" href="{% static "js/bootstrap.min.js" %}">
-    <link rel="stylesheet" href="{% static "css/decoration_noun.css" %}">
-</head>
-<body>
-<br>
+{% include "header.html" %}
+
+
 <style>
     td{border: 1px solid;}
     th{border: 1px solid;}
@@ -18,24 +9,8 @@
     .poiner{cursor: pointer;}
     .past{background-color: #909090;}
 </style>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="{% url 'home' %}">Home</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNavDropdown">
-    <ul class="navbar-nav">
-      <li class="nav-item">
-            <a class="nav-link" href="{% url 'table' %}">Appointment</a>
-      </li>
-      <li class="nav-item">
-            <a class="nav-link" href="#">About</a>
-      </li>
-    </ul>
-  </div>
-</nav>
 
-{% if user %}
+{% if not user.is_anonymous %}
     <table>
   <tr>
     <th></th>
@@ -84,12 +59,12 @@
         {% endfor %}
     </table>
 
-    <form>
-        <!-- Кнопка для перехода на предыдущую неделю -->
+    {# Кнопка для перехода на предыдущую неделю #}
+    {% if back != -1 %}
         <a href="?next={{ back }}" class="btn btn-primary">Назад</a>
-        <!-- Кнопка для перехода на следующую неделю -->
-        <a href="?next={{ page }}" class="btn btn-primary">Вперед</a>
-    </form>
+    {% endif %}
+    {# Кнопка для перехода на следующую неделю #}
+    <a href="?next={{ page }}" class="btn btn-primary">Вперед</a>
 
     {% else %}
     <p>Для записи на прием войдите в аккаунт</p>

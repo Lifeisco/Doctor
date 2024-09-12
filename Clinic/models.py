@@ -31,7 +31,6 @@ class Appointment(models.Model):
     time = models.TimeField(blank=False)
     date = models.DateField(max_length=16, blank=False)
     doctor_id = models.ForeignKey(Doctor, on_delete=models.CASCADE)
-    mobile_number = models.CharField(max_length=16, blank=False)
 
     def __str__(self):
         return f'''{self.time.strftime('%H:%M')} {self.date.strftime('%d.%m.%Y')} {self.client_id.username} 
