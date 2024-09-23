@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+     <title>Clinic</title>
+    <link rel="stylesheet" href="{% static "Clinic/css/bootstrap.css" %}">
+    <link rel="stylesheet" href="{% static "Clinic/js/bootstrap.min.js" %}">
+    <link rel="stylesheet" href="{% static "Clinic/css/decoration_noun.css" %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<style>
+    .bg-primary{
+        border: 2px solid;
+    }
+</style>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <img src="{% static "Clinic/img/tooth.png" %}" alt="Here's our clinic logo" width="100" height="100">
+  <a class="navbar-brand" href="{% url 'home' %}"><i class="fa-solid fa-house"></i> Главная</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+            <a class="nav-link" href="{% url 'table' %}"> <i class="fa-solid fa-clipboard"></i> Appointment</a>
+      </li>
+      <li class="nav-item">
+            <a class="nav-link" href="#"><i class="fa-solid fa-circle-info"></i> About</a>
+      </li>
+      <li class="nav-item">
+            <a class="nav-link" href="{% url 'for_doctor' %}"><i class="fa-solid fa-user-doctor"></i> For doctor</a>
+      </li>
+        {% if not user.is_anonymous %}
+            <li class="nav-item">
+                <a class="nav-link" href="#"><i class="fa-solid fa-user"></i> {{ user }}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link bg-primary" href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i> Log out</a>
+            </li>
+        {% else %}
+
+            <li class="nav-item">
+                <a class="nav-link bg-primary" href="{% url 'login' %}">Log in <i class="fa-solid fa-right-to-bracket"></i></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link bg-primary" href="{% url 'register' %}">Register <i class="fa-solid fa-user-plus"></i></a>
+            </li>
+        {% endif %}
+    </ul>
+  </div>
+</nav>

@@ -22,32 +22,27 @@
     <th>Суббота</th>
     <th>Воскресенье</th>
 
-  </tr>
+</tr>
     <tr>
         <th></th>
         {% for date, times in dates.items %}
             <th>{{ date }}</th>
         {% endfor %}
     </tr>
-        {% for time in time_list %}
-            <tr>
-                <td>{{ time }}</td>
+    {% for time in time_list %}
+        <tr>
+            <td>{{ time.string }}</td>
 
                 {% for date, times in dates.items %}
-                  {% if time in times %}
+                  {% if time.string in times %}
                             <td class="booked" onclick="alert('Это время занято!')"></td>
-                  {% elif today > date and page == 1 or today == date and time < now or today == date and now|length > time|length %}
-                      {# today > date #}
-                      {# today == date and time < now #}
-                      {# today == date and now|length > time|length #}
-                      {# Обязательное условие page=1 #}
-
+                  {% elif todaysDate > date and page == 1 or todaysDate == date and now_time > time.minutes %}
+                            {# todaysDate > date and page == 1 #}
+                            {# todaysDate == date and now_time > time.minutes #}
                             <td class="past" onclick="alert('Вы не можете записаться на это время!')">
-
                             </td>
-
                   {% else %}
-                            <td class="free poiner"><a href="{% url 'appoint' %}?time={{ time }}&date={{ date }}">{{ time }}</a></td>
+                            <td class="free poiner"><a href="{% url 'appoint' %}?time={{ time.string }}&date={{ date }}">{{ time.string }}</a></td>
                   {% endif %}
 
 

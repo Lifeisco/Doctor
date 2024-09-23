@@ -33,5 +33,5 @@ class Appointment(models.Model):
     doctor_id = models.ForeignKey(Doctor, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'''{self.time.strftime('%H:%M')} {self.date.strftime('%d.%m.%Y')} {self.client_id.username} 
+        return f'''{self.time.strftime('%H:%M')} {self.date.strftime('%d.%m.%Y')} {self.client_id.username} Doctor - {self.doctor_id.name} 
                {UserPhone.objects.get(user=self.client_id)}'''

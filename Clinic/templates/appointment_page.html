@@ -19,12 +19,17 @@
     <div class="mb-3">
     <label for="exampleInputPassword1" class="form-label">Номер телефона</label>
     <input type="text" class="form-control" id="exampleInputPassword1" name="mobile_number">
+    <label for="exampleInputPassword1" class="form-label">Выберете доктора</label> <br>
+        {% for doctor in doctors %}
+            <input name="doctor_id" type="radio" value="{{ doctor.id }}"> {{ doctor }} <br>
+        {% endfor %}
     </div>
   <div class="mb-3 form-check">
     <input type="checkbox" class="form-check-input" id="exampleCheck1">
   </div>
   <button type="submit" class="btn btn-primary" value="save">Отправить</button>
 </form>
+
 
 </body>
 </html>

@@ -12,6 +12,7 @@
     <th>Дата</th>
     <th>Клиент</th>
     <th>Номер Тел</th>
+    <th>Доктор</th>
   </tr>
     {% for appoint in appointments %}
         <tr>
@@ -19,8 +20,14 @@
             <td>{{ appoint.date }}</td>
             <td>{{ appoint.client_id }}</td>
             <td>{{ appoint.client_id.userphone }}</td>
+            <td>{{ appoint.doctor_id.name }}</td>
         </tr>
     {% endfor %}
+    {% if back != -1 %}
+        <a href="?next={{ back }}" class="btn btn-primary">Назад</a>
+    {% endif %}
+    <a href="?next={{ next }}" class="btn btn-primary">Вперед</a>
+
 
 </table>
 
