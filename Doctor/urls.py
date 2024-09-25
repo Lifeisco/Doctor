@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from Clinic.views import show_table, home, appointment_page, login_page, reg_page, log_out, for_doctor
+from Clinic.views import show_table, home, appointment_page, login_page, reg_page, log_out, for_doctor, my_foo
 
 
 urlpatterns = [
@@ -31,6 +31,7 @@ urlpatterns = [
     path('login/', login_page, name='login'),
     path('sign_up/', reg_page, name='register'),
     path('logout/', log_out, name='logout'),
-    path('fordoctor/', for_doctor, name='for_doctor')
+    path('fordoctor/', for_doctor, name='for_doctor'),
+    path('myfoo/', my_foo, name='my_foo')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

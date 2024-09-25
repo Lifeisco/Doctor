@@ -34,20 +34,15 @@
             <td>{{ time.string }}</td>
 
                 {% for date, times in dates.items %}
-                  {% if time.string in times %}
+                  {% if time.string in times and date in fill_date %}
                             <td class="booked" onclick="alert('Это время занято!')"></td>
                   {% elif todaysDate > date and page == 1 or todaysDate == date and now_time > time.minutes %}
-                            {# todaysDate > date and page == 1 #}
-                            {# todaysDate == date and now_time > time.minutes #}
-                            <td class="past" onclick="alert('Вы не можете записаться на это время!')">
-                            </td>
+                            <td class="past" onclick="alert('Вы не можете записаться на это время!')"></td>
                   {% else %}
                             <td class="free poiner"><a href="{% url 'appoint' %}?time={{ time.string }}&date={{ date }}">{{ time.string }}</a></td>
                   {% endif %}
 
-
                 {% endfor %}
-
 
             </tr>
 
@@ -64,6 +59,14 @@
     {% else %}
     <p>Для записи на прием войдите в аккаунт</p>
 {% endif %}
+<br>
 
+{% for time in time_list %}
+    {% for date, times in dates.items %}
+        {% if time.string in times and date in fill_date %}
+            <p>Переменная times - {{ times }}</p>
+        {% endif %}
+    {% endfor %}
+{% endfor %}
 </body>
 </html>

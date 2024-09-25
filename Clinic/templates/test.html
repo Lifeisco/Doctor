@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Info</title>
+</head>
+<body>
+
+    {% for el in Information %}
+        {% if el == 'first_name' %}
+            <p>Name is {{ Information.first_name|upper }}</p>
+        {% endif %}
+    {% endfor %}
+</body>
+</html>

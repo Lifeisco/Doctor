@@ -4,8 +4,8 @@ from Clinic.models import Appointment, Doctor, UserPhone
 from django.contrib.auth.models import User
 import datetime
 
-#TODO Наш слот по времени считается занятым если на него записаны ко всем врачам
-#TODO На слот при записи на какое то время нам предлагаются те врачи, которые не заняты
+#  TODO На слот при записи на какое то время не высвечивать тех докторов, которые заняты
+#  TODO Отобразить записи на странице ForDoctor для конкретного доктора
 
 def login_page(request):
     if request.method == 'POST':
@@ -43,7 +43,7 @@ def home(request):
     return render(request, 'home.html')
 
 
-import datetime
+
 
 
 def show_table(request):
@@ -52,18 +52,25 @@ def show_table(request):
     time_list = []
     dates = {}
     fill_time = []
+    fill_date = []
+    quantityOfdoctors = Doctor.objects.all().count()
+
+
+
+    '''busy_doctors = Appointment.objects.filter(date=date_obj, time=time_obj)
+    busy_doctors_ids = busy_doctors.values_list('doctor__id', flat=True)'''
 
     for i in range(22):
         time_list.append({"string": f"{minutes // 60}:{minutes % 60 if minutes % 60 else '00'}",
-                          "minutes": minutes}) # string - строка со временем(9:00, 9:30..)  minutes - кол-во минут
+                          "minutes": minutes})  # string - строка со временем(9:00, 9:30..)  minutes - кол-во минут
         minutes += 30
 
     year, week, dow = datetime.datetime.now().isocalendar()
     todaysDate = datetime.date.today()  # Дата сегоднешнего дня в формате YYYY-MM-DD
 
-    next = int(request.GET.get("next", 0)) # Переменная переключающая отображения таблицы на сл недели
+    next = int(request.GET.get("next", 0))  # Переменная переключающая отображения таблицы на сл недели
 
-    back = next
+    back = next  # Переменная переключающая отображения таблицы на прошлые недели
     back -= 1
 
     for i in range(1 - dow + next * 7, 8 - dow + next * 7):  # Цикл создания дат на неделю
@@ -75,11 +82,38 @@ def show_table(request):
     for x in appointment_data:
         x.date = x.date.strftime("%d-%m-%Y")
 
-        fillTimeAndDate.append({"date": x.date, "time": x.time})  # Добавление в список занятых дат и часов
-        dates[x.date].append(x.time.strftime("%H:%M"))
+
+        fillTimeAndDate.append({"date": x.date, "time": x.time})  # Добавление в список словарей занятых дат и часов
+
+        dates[x.date].append(x.time.strftime("%H:%M").lstrip('0'))  # пофиксил
+
+    for date in dates:
+        #  ['11:00', '9:00', '11:00', '11:00']
+        new_list = []
+        for el in set(dates[date]):
+            if dates[date].count(el) >= quantityOfdoctors:
+                new_list.append(el)
+        dates[date] = new_list
 
     for dateandtime in fillTimeAndDate:
-        fill_time.append(str(list(dateandtime.values())[1])[:5])
+        fill_time.append(str(dateandtime['time'])[:5].lstrip('0'))
+
+    for date in fillTimeAndDate:
+        fill_date.append(date['date'])
+
+    print(f'fillTimeAndDate - {fillTimeAndDate}')
+
+    print(f'Dates - {dates}')
+
+
+
+    '''print(dates)
+    for dict in dates:
+        for el in dates[f'{dict}']:
+            print(el)''' #  может оказаться полезным
+
+
+
 
     now_time = datetime.datetime.now().time()
     now_time = now_time.minute + now_time.hour * 60
@@ -90,7 +124,9 @@ def show_table(request):
             'todaysDate': todaysDate.strftime("%d-%m-%Y"),
             'fill_time': fill_time,
             'page': next + 1,
-            'back': back}
+            'back': back,
+            'fill_date': fill_date
+            }
     return render(request, 'table.html', context=data)
 
 
@@ -136,3 +172,14 @@ def for_doctor(request):
 
     }
     return render(request, 'For_doctor.html', context=data)
+
+
+# Мой функция для изучения django, она не связана с проектом
+def my_foo(request):
+    values = {'first_name': 'Albert',
+              'last_name': 'Muller',
+              'age': 23,
+              'address': 'Ox. Street 14'}
+    data = {'Information': values}
+
+    return render(request, 'test.html', context=data)
