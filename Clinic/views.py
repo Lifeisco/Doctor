@@ -4,7 +4,6 @@ from Clinic.models import Appointment, Doctor, UserPhone
 from django.contrib.auth.models import User
 import datetime
 
-#  TODO На слот при записи на какое то время не высвечивать тех докторов, которые заняты
 #  TODO Отобразить записи на странице ForDoctor для конкретного доктора
 
 def login_page(request):
@@ -54,11 +53,8 @@ def show_table(request):
     fill_time = []
     fill_date = []
     quantityOfdoctors = Doctor.objects.all().count()
+    datesIndays = []
 
-
-
-    '''busy_doctors = Appointment.objects.filter(date=date_obj, time=time_obj)
-    busy_doctors_ids = busy_doctors.values_list('doctor__id', flat=True)'''
 
     for i in range(22):
         time_list.append({"string": f"{minutes // 60}:{minutes % 60 if minutes % 60 else '00'}",
@@ -82,38 +78,26 @@ def show_table(request):
     for x in appointment_data:
         x.date = x.date.strftime("%d-%m-%Y")
 
-
         fillTimeAndDate.append({"date": x.date, "time": x.time})  # Добавление в список словарей занятых дат и часов
-
-        dates[x.date].append(x.time.strftime("%H:%M").lstrip('0'))  # пофиксил
+        dates[x.date].append(x.time.strftime("%H:%M").lstrip('0'))
 
     for date in dates:
-        #  ['11:00', '9:00', '11:00', '11:00']
         new_list = []
         for el in set(dates[date]):
             if dates[date].count(el) >= quantityOfdoctors:
                 new_list.append(el)
         dates[date] = new_list
 
+    for el in dates:
+        date_obj = datetime.datetime.strptime(el, "%d-%m-%Y")
+        days_since_start_of_year = (date_obj - datetime.datetime(date_obj.year, 1, 1)).days + 1
+        datesIndays.append(days_since_start_of_year)
+
     for dateandtime in fillTimeAndDate:
         fill_time.append(str(dateandtime['time'])[:5].lstrip('0'))
 
     for date in fillTimeAndDate:
         fill_date.append(date['date'])
-
-    print(f'fillTimeAndDate - {fillTimeAndDate}')
-
-    print(f'Dates - {dates}')
-
-
-
-    '''print(dates)
-    for dict in dates:
-        for el in dates[f'{dict}']:
-            print(el)''' #  может оказаться полезным
-
-
-
 
     now_time = datetime.datetime.now().time()
     now_time = now_time.minute + now_time.hour * 60
@@ -125,7 +109,9 @@ def show_table(request):
             'fill_time': fill_time,
             'page': next + 1,
             'back': back,
-            'fill_date': fill_date
+            'fill_date': fill_date,
+            'datesIndays': datesIndays,
+            'dayOfYear': (datetime.datetime.now() - datetime.datetime(datetime.datetime.now().year, 1, 1)).days + 1
             }
     return render(request, 'table.html', context=data)
 
@@ -133,29 +119,34 @@ def show_table(request):
 def appointment_page(request):
     date = request.GET.get("date", False)
     time = request.GET.get("time", False)
+    date2 = False
+    if date:
+        date2 = datetime.datetime.strptime(date, "%d-%m-%Y")
+
 
     if request.method == "POST":
-
 
         date = request.POST.get("date", False)
         time = request.POST.get("time", False)
         doctor_id = request.POST.get("doctor_id", False)
         if date and time and doctor_id:
-            date = datetime.datetime.strptime(date, "%d-%m-%Y")
+            date2 = datetime.datetime.strptime(date, "%d-%m-%Y")
 
             appointment = Appointment()
-            appointment.date = date
+            appointment.date = date2
             appointment.time = time
             appointment.client_id = request.user
             appointment.doctor_id = Doctor.objects.get(id=doctor_id)
 
             appointment.save()
-            date = datetime.datetime.strftime(date, "%d-%m-%Y")
+
+    AppointQuery = Appointment.objects.filter(date=date2, time=time).only('id').all()
+    DoctorList = Doctor.objects.exclude(appointment__in=AppointQuery)
 
     data = {
         'date': date,
         'time': time,
-        'doctors': Doctor.objects.all()
+        'doctors': DoctorList
     }
     return render(request, 'appointment_page.html', context=data)
 
